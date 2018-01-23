@@ -88,48 +88,45 @@ RUN cd $HOME/git/QUIP/ \
     && make QUIPPY_INSTALL_OPTS=--user install-quippy
 
 RUN mkdir $HOME/code
-# Download code
-WORKDIR $HOME/code
 
 USER root
 
 # Actually, don't download, but get the code directly from this repo
-COPY predictor.py predictor.py
-COPY webservice webservice
+COPY predictor.py $HOME/code/predictor.py
+COPY webservice $HOME/code/webservice
 #COPY ./setup.py setup.py
 #COPY ./README.rst README.rst
 #COPY ./MANIFEST.in MANIFEST.in
 #COPY ./LICENSE.txt LICENSE.txt
-COPY run_tests.py run_tests.py
+COPY run_tests.py $HOME/code/run_tests.py
 
 # Set proper permissions
 RUN chown -R app:app $HOME
 
+USER app
 
-## install rest of the packages as normal user (app, provided by passenger)
-#USER app
+RUN pip2 install numba==0.36.1 tqdm==4.19.5 psutil==5.4.3 future ipython==5.4
+
+RUN cd $HOME/git/  \
+    && git clone https://github.com/cosmo-epfl/glosim2.git
+
+# Create a proper wsgi file file
 #
-## Install SeeK-path
-## Note: if you want to deploy with python3, use 'pip3' instead of 'pip'
-#WORKDIR $HOME
-#
-## Create a proper wsgi file file
-##
-#ENV SP_WSGI_FILE=webservice/seekpath_app.wsgi
-#RUN echo "import sys" > $SP_WSGI_FILE && \
-#    echo "sys.path.insert(0, '/home/app/code/seekpath/webservice')" >> $SP_WSGI_FILE && \
-#    echo "from seekpath_app import app as application" >> $SP_WSGI_FILE
-#
-## Go back to root.
-## Also, it should remain as user root for startup
-#USER root
-#
-## Setup apache
-## Disable default apache site, enable seekpath site; also
-## enable needed modules
-#ADD ./.docker_files/seekpath-apache.conf /etc/apache2/sites-available/seekpath.conf
-#RUN a2enmod wsgi && a2enmod xsendfile && \
-#    a2dissite 000-default && a2ensite seekpath
+ENV SP_WSGI_FILE=$HOME/code/webservice/nmr_prediction_app.wsgi
+RUN echo "import sys" > $SP_WSGI_FILE && \
+    echo "sys.path.insert(0, '/home/app/code/webservice')" >> $SP_WSGI_FILE && \
+    echo "from nmr_prediction_app import app as application" >> $SP_WSGI_FILE
+
+# Go back to root.
+# Also, it should remain as user root for startup
+USER root
+
+# Setup apache
+# Disable default apache site, enable seekpath site; also
+# enable needed modules
+ADD ./.docker_files/nmr_prediction-apache.conf /etc/apache2/sites-available/nmr_prediction.conf
+RUN a2enmod wsgi && a2enmod xsendfile && \
+    a2dissite 000-default && a2ensite nmr_prediction
 
 # Activate apache at startup
 RUN mkdir /etc/service/apache

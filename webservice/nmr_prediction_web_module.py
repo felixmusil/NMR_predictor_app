@@ -18,7 +18,6 @@ import json
 import io
 
 import jinja2
-import spglib  # Mainly to get its version
 
 
 class FlaskRedirectException(Exception):

@@ -1,5 +1,5 @@
 import os
-import seekpath_app
+import nmr_prediction_app
 import unittest
 import tempfile
 
@@ -7,15 +7,15 @@ import tempfile
 class FlaskTestCase(unittest.TestCase):
 
     def setUp(self):
-        #self.db_fd, seekpath_app.app.config['DATABASE'] = tempfile.mkstemp()
-        seekpath_app.app.config['TESTING'] = True
-        self.app = seekpath_app.app.test_client()
-        #with seekpath_app.app.app_context():
-        #    seekpath_app.init_db()
+        #self.db_fd, nmr_prediction_app.app.config['DATABASE'] = tempfile.mkstemp()
+        nmr_prediction_app.app.config['TESTING'] = True
+        self.app = nmr_prediction_app.app.test_client()
+        #with nmr_prediction_app.app.app_context():
+        #    nmr_prediction_app.init_db()
 
     def tearDown(self):
         #os.close(self.db_fd)
-        #os.unlink(seekpath_app.app.config['DATABASE'])
+        #os.unlink(nmr_prediction_app.app.config['DATABASE'])
         pass
 
 

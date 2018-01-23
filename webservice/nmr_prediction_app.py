@@ -14,7 +14,7 @@ import datetime
 import flask
 import os
 
-from seekpath_web_module import (generate_log, FlaskRedirectException, logme,
+from nmr_prediction_web_module import (generate_log, FlaskRedirectException, logme,
                                  process_structure_core)
 
 
@@ -112,11 +112,13 @@ if __name__ == "__main__":
     # If run manually (=> debug/development mode),
     # use the local version of seekpath, not the installed one
     import sys
-    sys.path.insert(0, os.path.join(os.path.split(__file__)[0], os.pardir))
+    # sys.path.insert(0, os.path.join(os.path.split(__file__)[0], os.pardir))
+    sys.path.insert(0,'/home/app/git/glosim2')
 # Need to import all three, as they are used later when seekpath
 # is passed as a variable - otherwise, the function will not use it
-import seekpath, seekpath.hpkot, seekpath.brillouinzone, seekpath.brillouinzone.brillouinzone
-from seekpath.hpkot import SymmetryDetectionError
+# import seekpath, seekpath.hpkot, seekpath.brillouinzone, seekpath.brillouinzone.brillouinzone
+# from seekpath.hpkot import SymmetryDetectionError
+import libmatch.soap as soap
 
 static_folder = os.path.join(
     os.path.split(os.path.realpath(__file__))[0], 'static')
