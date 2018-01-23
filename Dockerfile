@@ -61,8 +61,8 @@ ENV HOME /home/app
 
 
 USER app
-### Instal QUIP
-RUN pip2 install numpy==1.13 scipy==1.0.0
+### INSTALL QUIP
+RUN pip2 install numpy==1.13 scipy==1.0.0 Flask==0.12.2 qe_tools==1.0.0 pymatgen==2017.7.4
 RUN pip2 install --upgrade --user ase==3.15.0
 
 # fetch QUIP, GAP and shortcut files to install linux_x86_64_gfortran architecture
@@ -85,23 +85,26 @@ RUN cd $HOME/git/QUIP/ \
 RUN cd $HOME/git/QUIP/ \
     && export QUIP_ARCH=linux_x86_64_gfortran \
     && make quippy \
-    && make install-quippy
+    && make QUIPPY_INSTALL_OPTS=--user install-quippy
 
-
+RUN mkdir $HOME/code
 # Download code
-WORKDIR $HOME/
+WORKDIR $HOME/code
+
+USER root
 
 # Actually, don't download, but get the code directly from this repo
-COPY ./predictor.py/ predictor.py
-COPY ./webservice/ webservice
+COPY predictor.py predictor.py
+COPY webservice webservice
 #COPY ./setup.py setup.py
 #COPY ./README.rst README.rst
 #COPY ./MANIFEST.in MANIFEST.in
 #COPY ./LICENSE.txt LICENSE.txt
-COPY ./run_tests.py run_tests.py
+COPY run_tests.py run_tests.py
 
 # Set proper permissions
 RUN chown -R app:app $HOME
+
 
 ## install rest of the packages as normal user (app, provided by passenger)
 #USER app
